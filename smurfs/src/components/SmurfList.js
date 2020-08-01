@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import SmurfCard from './SmurfCard';
+import { connect } from 'react-redux';
+import { fetchSmurfs } from '../actions'
 
-const SmurfList = () => {
+const SmurfList = props => {
+    useEffect(()=>{
+        props.fetchSmurfs()
+    }, [])
     return (
-        <div> hi, im SmurfList. </div>
+        <div className='flex'>
+        {props.isFetching ? <p>...LOADING...</p>: 
+        props.error.length ? <p>ERROR: {props.error}</p> :
+        props.smurfs.map(smurf => <SmurfCard key={smurf.id} smurf={smurf}/>)
+        }
+        </div>
     );
 };
 
-export default SmurfList;
+const mapStateToProps = state => {
+    return {
+        isFetching: state.isFetching,
+        error: state.error,
+        smurfs: state.smurfs
+    };
+};
+
+export default connect(mapStateToProps, {fetchSmurfs})(SmurfList);
